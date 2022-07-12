@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Represents a line of an {@link io.github.mcrtin.bwinfLib.example.Example, Example}.
+ * Represents a line of an {@link io.github.mcrtin.bwinfLib.example.Example Example}.
  * @see io.github.mcrtin.bwinfLib.example.Example
  */
 @Data
 public class InputLine implements List<Input> {
 
     @Delegate
+    @NonNull
     private final List<Input> line;
 
     /**
@@ -66,7 +67,6 @@ public class InputLine implements List<Input> {
 
     /**
      * @see List#get(int)
-     * @see Input#getString()
      */
     public String getString(int index) {
         return get(index).getString();

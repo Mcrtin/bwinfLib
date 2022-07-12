@@ -19,3 +19,9 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+task makeJavadoc (type :Jar, dependsOn: javadoc){
+    from docsDir
+    classifier='docs'
+    description='Creates a Javadoc Jar'
+}

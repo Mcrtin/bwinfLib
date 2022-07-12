@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 /**
  * Represents a section without spaces and newlines in an {@link InputLine}.
+ * <p>
+ * You can use noSplit in {@link ExampleTester} to change this behavior.
  */
 @Data
 public class Input {

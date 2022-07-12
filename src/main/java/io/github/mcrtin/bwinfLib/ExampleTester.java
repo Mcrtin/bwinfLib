@@ -2,7 +2,7 @@ package io.github.mcrtin.bwinfLib;
 
 import io.github.mcrtin.bwinfLib.example.Example;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -19,9 +19,8 @@ import java.util.stream.IntStream;
 
 /**
  * Let this execute in your <code>main(String[][])</code>
- * @param <T> type of {@link io.github.mcrtin.bwinfLib.example, example}
+ * @param <T> type of {@link io.github.mcrtin.bwinfLib.example example}
  */
-@Getter
 @AllArgsConstructor
 public class ExampleTester<T extends Example>  {
 
@@ -41,22 +40,22 @@ public class ExampleTester<T extends Example>  {
      * Constructs an example tester
      */
     public static ExampleTester<Example> readExamples(String name, int min, int max) {
-        return readExamples(name, min, max, Example::new);
+        return readExamples(name, min, max, Example::new, false);
     }
 
     /**
      * Constructs an example tester
      */
     public static ExampleTester<Example> readExamples(String name, int min, int max, int bwinfNumber) {
-        return readExamples(name, min, max, bwinfNumber, Example::new);
+        return readExamples(name, min, max, bwinfNumber, Example::new, false);
     }
 
     /**
      * Constructs an example tester
      */
-    public static <T extends Example> ExampleTester<T> readExamples(String name, int min, int max, BiFunction<Integer, List<InputLine>, T> exampleClass) {
+    public static <T extends Example> ExampleTester<T> readExamples(String name, int min, int max, BiFunction<Integer, List<InputLine>, T> exampleClass, boolean noSplit) {
         List<T> examples = IntStream.rangeClosed(min, max)
-                .mapToObj(i -> readExample(name, i, exampleClass))
+                .mapToObj(i -> readExample(name, i, exampleClass, noSplit))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -66,9 +65,9 @@ public class ExampleTester<T extends Example>  {
     /**
      * Constructs an example tester
      */
-    public static <T extends Example> ExampleTester<T> readExamples(String name, int min, int max, int bwinfNumber, BiFunction<Integer, List<InputLine>, T> exampleClass) {
+    public static <T extends Example> ExampleTester<T> readExamples(String name, int min, int max, int bwinfNumber, BiFunction<Integer, List<InputLine>, T> exampleClass, boolean noSplit) {
         List<T> examples = IntStream.rangeClosed(min, max)
-                .mapToObj(i -> readExample(name, i, bwinfNumber, exampleClass))
+                .mapToObj(i -> readExample(name, i, bwinfNumber, exampleClass, noSplit))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -120,35 +119,37 @@ public class ExampleTester<T extends Example>  {
     /**
      * Only for the first round
      */
-    private static <T extends Example> Optional<T> readExample(String name, int number, BiFunction<Integer, List<InputLine>, T> exampleClass) {
+    private static <T extends Example> Optional<T> readExample(String name, int number, BiFunction<Integer, List<InputLine>, T> exampleClass, boolean noSplit) {
         Optional<BufferedReader> connection = openConnection(name, number, "user_upload");
-        return connection.map(in -> readExample(in, number, exampleClass));
+        return connection.map(in -> readExample(in, number, exampleClass, noSplit));
     }
 
-    private static <T extends Example> Optional<T> readExample(String name, int number, int bwinfNumber, BiFunction<Integer, List<InputLine>, T> exampleClass) {
+    private static <T extends Example> Optional<T> readExample(String name, int number, int bwinfNumber, BiFunction<Integer, List<InputLine>, T> exampleClass, boolean noSplit) {
         Optional<BufferedReader> connection = openConnection(name, number, "bundeswettbewerb/" + bwinfNumber);
-        return connection.map(in -> readExample(in, number, exampleClass));
+        return connection.map(in -> readExample(in, number, exampleClass, noSplit));
     }
 
-    private static <T extends Example> T readExample(BufferedReader in, int number, BiFunction<Integer, List<InputLine>, T> exampleClass) {
+    private static <T extends Example> T readExample(BufferedReader in, int number, BiFunction<Integer, List<InputLine>, T> exampleClass, boolean noSplit) {
         List<InputLine> inputLines = in.lines()
-                .map(line -> new InputLine(Arrays.stream(line.split(" "))
+                .map(line -> new InputLine(Arrays.stream(noSplit ? new String[] {line} : line.split(" "))
                         .map(Input::new)
                         .collect(Collectors.toList())))
                 .collect(Collectors.toList());
         return exampleClass.apply(number, inputLines);
     }
 
+    @SneakyThrows(IOException.class)
     private static Optional<BufferedReader> openConnection(String name, int number, String extra) {
         try {
             URL url = new URL("https://bwinf.de/fileadmin/" + extra + "/" + name + number + ".txt");
             return Optional.of(new BufferedReader(new InputStreamReader(url.openStream())));
         } catch (FileNotFoundException ignored) {
             System.err.println("no example found with number " + number);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return Optional.empty();
     }
 
+    public List<T> getExamples() {
+        return this.examples;
+    }
 }

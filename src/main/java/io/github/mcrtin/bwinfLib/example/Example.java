@@ -2,6 +2,7 @@ package io.github.mcrtin.bwinfLib.example;
 
 import io.github.mcrtin.bwinfLib.InputLine;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.experimental.Delegate;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class Example implements List<InputLine> {
     private final int number;
 
     @Delegate
+    @NonNull
     private final List<InputLine> inputLines;
 }
 

@@ -12,8 +12,7 @@ public class ListExample extends Example {
     private final InputLine firstLine;
 
     /**
-     * Removes the first line.
-     * You can get it with {@link #getFirstLine()}.
+     * Removes the first line and saves it in {@link #firstLine}.
      */
     public ListExample(int number, List<InputLine> inputLines) {
         super(number, inputLines);
@@ -21,7 +20,7 @@ public class ListExample extends Example {
     }
 
     /**
-     * Transforms each line to a
+     * Transforms each line to an Object
      */
     public <T> List<T> getList(Function<InputLine, T> transformer) {
         return stream()

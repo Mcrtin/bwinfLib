@@ -17,23 +17,43 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Let this execute in your <code>main(String[][])</code>
+ * @param <T> type of {@link io.github.mcrtin.bwinfLib.example, example}
+ */
 @Getter
 @AllArgsConstructor
 public class ExampleTester<T extends Example>  {
+
+    /**
+     * @see Example
+     */
     private final List<T> examples;
 
+    /**
+     * Constructs an example tester
+     */
     public static ExampleTester<Example> readExamples(String name, int max) {
         return readExamples(name, 0, max);
     }
 
+    /**
+     * Constructs an example tester
+     */
     public static ExampleTester<Example> readExamples(String name, int min, int max) {
         return readExamples(name, min, max, Example::new);
     }
 
+    /**
+     * Constructs an example tester
+     */
     public static ExampleTester<Example> readExamples(String name, int min, int max, int bwinfNumber) {
         return readExamples(name, min, max, bwinfNumber, Example::new);
     }
 
+    /**
+     * Constructs an example tester
+     */
     public static <T extends Example> ExampleTester<T> readExamples(String name, int min, int max, BiFunction<Integer, List<InputLine>, T> exampleClass) {
         List<T> examples = IntStream.rangeClosed(min, max)
                 .mapToObj(i -> readExample(name, i, exampleClass))
@@ -43,6 +63,9 @@ public class ExampleTester<T extends Example>  {
         return new ExampleTester<>(examples);
     }
 
+    /**
+     * Constructs an example tester
+     */
     public static <T extends Example> ExampleTester<T> readExamples(String name, int min, int max, int bwinfNumber, BiFunction<Integer, List<InputLine>, T> exampleClass) {
         List<T> examples = IntStream.rangeClosed(min, max)
                 .mapToObj(i -> readExample(name, i, bwinfNumber, exampleClass))
@@ -53,10 +76,19 @@ public class ExampleTester<T extends Example>  {
     }
 
 
+    /**
+     * Tests all examples.
+     * <p>
+     * This is equal to {@link #test(Supplier, boolean)}
+     */
     public void test(Supplier<Testable<T>> testable) {
         test(testable, false);
     }
 
+    /**
+     * tests all examples.
+     * @param onlyOutput true if it should display less debug info
+     */
     public void test(Supplier<Testable<T>> testable, boolean onlyOutput) {
         for (T example : examples) {
             Testable<T> instance = testable.get();
